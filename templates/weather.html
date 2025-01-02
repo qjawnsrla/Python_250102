@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Data</title>
+    <script src="https://cdn.jsdelivr.net/npm/prettier@2.7.1/standalone.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prettier@2.7.1/parser-babel.js"></script>
+</head>
+<body>
+    <h1>Weather Information</h1>
+    <div id="weather-container"></div>
+    <label for="prettier-toggle">Prettier 보기:</label>
+    <input type="checkbox" id="prettier-toggle" />
+
+    <script>
+        // 날씨 정보를 가져오는 함수
+        function fetchWeatherData() {
+            fetch('http://127.0.0.1:5000/api/multiple-locations-weather')
+                .then(response => response.json())
+                .then(data => {
+                    let jsonData = JSON.stringify(data, null, 4); // JSON 데이터를 예쁘게 포맷
+
+                    const toggle = document.getElementById("prettier-toggle");
+                    const container = document.getElementById("weather-container");
+
+                    // Prettier 적용 여부에 따라 JSON을 처리
+                    if (toggle.checked) {
+                        jsonData = prettier.format(jsonData, { parser: "json" });
+                    }
+
+                    container.innerHTML = `<pre>${jsonData}</pre>`; // JSON 데이터를 HTML로 표시
+                })
+                .catch(error => console.error('Error fetching weather data:', error));
+        }
+
+        // 페이지 로드 시 날씨 데이터 가져오기
+        window.onload = fetchWeatherData;
+
+        // 체크박스 상태 변화에 따라 Prettier 적용 여부 결정
+        document.getElementById('prettier-toggle').addEventListener('change', fetchWeatherData);
+    </script>
+</body>
+</html>
